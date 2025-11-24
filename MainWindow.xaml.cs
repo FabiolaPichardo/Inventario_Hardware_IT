@@ -39,5 +39,10 @@ namespace Inventario_Hardware_IT
         private void BtnTipos_Click(object sender, RoutedEventArgs e) { new GestionTipos().ShowDialog(); }
 
         private void BtnSalir_Click(object sender, RoutedEventArgs e) { Application.Current.Shutdown(); }
+
+        private void BtnEmpleados_Click(object sender, RoutedEventArgs e) { new GestionEmpleados().ShowDialog(); }
+        private void BtnAsignaciones_Click(object sender, RoutedEventArgs e) { new GestionAsignaciones().ShowDialog(); }
+        private void BtnManto_Click(object sender, RoutedEventArgs e) { new GestionMantenimiento().ShowDialog(); }
+
     }
 }

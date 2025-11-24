@@ -28,7 +28,7 @@ namespace Inventario_Hardware_IT
             try
             {
                 // Buscamos el usuario y su rol
-                string query = $"SELECT RolID FROM Usuarios WHERE NombreUsuario = '{user}' AND Password = '{pass}'";
+                string query = $"SELECT RolID FROM Usuarios WHERE NombreUsuario = '{user}' AND Contrasena = '{pass}'";
                 DataTable dt = db.LeerDatos(query);
 
                 if (dt.Rows.Count > 0)

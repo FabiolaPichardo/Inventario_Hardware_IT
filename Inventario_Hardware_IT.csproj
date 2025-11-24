@@ -56,7 +56,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="GestionAsignaciones.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GestionEmpleados.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="GestionHardware.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GestionMantenimiento.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -85,8 +97,17 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ConexionDB.cs" />
+    <Compile Include="GestionAsignaciones.xaml.cs">
+      <DependentUpon>GestionAsignaciones.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GestionEmpleados.xaml.cs">
+      <DependentUpon>GestionEmpleados.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GestionHardware.xaml.cs">
       <DependentUpon>GestionHardware.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GestionMantenimiento.xaml.cs">
+      <DependentUpon>GestionMantenimiento.xaml</DependentUpon>
     </Compile>
     <Compile Include="GestionMarcas.xaml.cs">
       <DependentUpon>GestionMarcas.xaml</DependentUpon>
