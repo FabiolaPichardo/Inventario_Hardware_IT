@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input; // NECESARIO PARA MOVER
 using System.Data;
+//using Inventario_Hardware_IT.Datos;
 
 namespace Inventario_Hardware_IT
 {
@@ -14,31 +16,44 @@ namespace Inventario_Hardware_IT
             CargarEmpleados();
         }
 
+        // --- FUNCIONES VISUALES ---
+        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
+        }
+
+        private void BtnCerrar_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+        // --------------------------
+
         private void CargarEmpleados()
         {
             try
             {
-                // Usamos tus columnas exactas: EmpleadoID, NombreCompleto, NumeroEmpleado
                 gridEmpleados.ItemsSource = db.LeerDatos("SELECT * FROM Empleados").DefaultView;
             }
-            catch (Exception ex) { MessageBox.Show(ex.Message); }
+            catch (Exception ex) { MessageBox.Show("Error al cargar: " + ex.Message); }
         }
 
         private void BtnGuardar_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtNombre.Text) || string.IsNullOrWhiteSpace(txtNumero.Text))
             {
-                MessageBox.Show("Llena todos los campos."); return;
+                MessageBox.Show("⚠️ Por favor, llena todos los campos.", "Faltan Datos", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
 
             try
             {
-                // INSERT usando tus columnas
                 string query = $"INSERT INTO Empleados (NombreCompleto, NumeroEmpleado) VALUES ('{txtNombre.Text}', '{txtNumero.Text}')";
                 db.EjecutarComando(query);
 
-                MessageBox.Show("Empleado registrado.");
-                txtNombre.Clear(); txtNumero.Clear();
+                MessageBox.Show("✅ Empleado registrado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                txtNombre.Clear();
+                txtNumero.Clear();
                 CargarEmpleados();
             }
             catch (Exception ex) { MessageBox.Show("Error: " + ex.Message); }

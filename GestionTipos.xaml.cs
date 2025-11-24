@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input; // NECESARIO PARA MOVER
 using System.Data;
-
+//using Inventario_Hardware_IT.Datos;
 
 namespace Inventario_Hardware_IT
 {
@@ -15,18 +16,27 @@ namespace Inventario_Hardware_IT
             CargarTipos();
         }
 
+        // --- FUNCIONES VISUALES ---
+        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
+        }
+
+        private void BtnCerrar_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+        // --------------------------
+
         private void CargarTipos()
         {
             try
             {
-                // Consultamos la tabla de Tipos
                 DataTable dt = db.LeerDatos("SELECT * FROM TiposHardware");
                 gridDatos.ItemsSource = dt.DefaultView;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar: " + ex.Message);
-            }
+            catch (Exception ex) { MessageBox.Show("Error al cargar: " + ex.Message); }
         }
 
         private void BtnGuardar_Click(object sender, RoutedEventArgs e)
@@ -35,25 +45,21 @@ namespace Inventario_Hardware_IT
 
             if (string.IsNullOrEmpty(nombre))
             {
-                MessageBox.Show("Escribe un nombre (Ej: Laptop, Monitor).");
+                MessageBox.Show("⚠️ Por favor, escribe un nombre.", "Faltan Datos", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             try
             {
-                // Guardamos en la tabla TiposHardware
-                // CÓDIGO CORREGIDO
                 string query = $"INSERT INTO TiposHardware (NombreTipo) VALUES ('{nombre}')";
                 db.EjecutarComando(query);
 
-                MessageBox.Show("Tipo guardado con éxito.");
+                MessageBox.Show("✅ Tipo registrado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+
                 txtNombreTipo.Clear();
-                CargarTipos(); // Recargar la tabla para ver el nuevo
+                CargarTipos();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al guardar: " + ex.Message);
-            }
+            catch (Exception ex) { MessageBox.Show("Error al guardar: " + ex.Message); }
         }
     }
 }

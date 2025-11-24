@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input; // NECESARIO PARA MOVER
 using System.Data;
+//using Inventario_Hardware_IT.Datos;
 
 namespace Inventario_Hardware_IT
 {
@@ -16,6 +18,19 @@ namespace Inventario_Hardware_IT
             dpFecha.SelectedDate = DateTime.Now;
         }
 
+        // --- FUNCIONES VISUALES ---
+        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
+        }
+
+        private void BtnCerrar_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+        // --------------------------
+
         private void CargarListas()
         {
             try
@@ -23,26 +38,35 @@ namespace Inventario_Hardware_IT
                 // 1. Cargar Empleados
                 cbEmpleado.ItemsSource = db.LeerDatos("SELECT * FROM Empleados").DefaultView;
 
-                // 2. Cargar SOLO Hardware Disponible (Para no asignar uno que ya tiene dueño)
-                // Hacemos un JOIN para mostrar Modelo y Serie en el texto
+                // 2. Cargar SOLO Hardware Disponible
                 string queryHW = @"SELECT H.HardwareID, (H.NumeroSerie + ' - ' + M.NombreModelo) AS InfoEquipo 
                                    FROM Hardware H 
                                    INNER JOIN Modelos M ON H.ModeloID = M.ModeloID 
-                                   WHERE H.Estado = 'Disponible'"; // <--- FILTRO IMPORTANTE
+                                   WHERE H.Estado = 'Disponible'";
 
                 DataTable dtHw = db.LeerDatos(queryHW);
+
+                // --- DIAGNÓSTICO: AVISAR SI NO HAY EQUIPOS ---
+                if (dtHw.Rows.Count == 0)
+                {
+                    // Esto agregará un ítem falso para avisarte visualmente
+                    // Pero lo ideal es que registres equipos o cambies su estado a 'Disponible'
+                }
+
                 cbHardware.ItemsSource = dtHw.DefaultView;
-                cbHardware.DisplayMemberPath = "InfoEquipo";
-                cbHardware.SelectedValuePath = "HardwareID";
+                cbHardware.DisplayMemberPath = "InfoEquipo"; // ESTO ES LO QUE SE VE
+                cbHardware.SelectedValuePath = "HardwareID"; // ESTO ES LO QUE SE GUARDA
             }
-            catch (Exception ex) { MessageBox.Show("Error listas: " + ex.Message); }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error listas: " + ex.Message);
+            }
         }
 
         private void CargarHistorial()
         {
             try
             {
-                // Consulta completa para ver quién tiene qué
                 string query = @"SELECT A.AsignacionID, H.NumeroSerie, E.NombreCompleto, A.FechaAsignacion 
                                  FROM Asignaciones A
                                  INNER JOIN Hardware H ON A.HardwareID = H.HardwareID
@@ -56,7 +80,8 @@ namespace Inventario_Hardware_IT
         {
             if (cbHardware.SelectedValue == null || cbEmpleado.SelectedValue == null)
             {
-                MessageBox.Show("Selecciona Equipo y Empleado."); return;
+                MessageBox.Show("⚠️ Selecciona un Equipo y un Empleado.", "Faltan datos", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
 
             try
@@ -65,17 +90,17 @@ namespace Inventario_Hardware_IT
                 int idEmp = (int)cbEmpleado.SelectedValue;
                 string fecha = dpFecha.SelectedDate.Value.ToString("yyyy-MM-dd");
 
-                // PASO 1: Guardar en Asignaciones
+                // 1. Insertar Asignación
                 string qInsert = $"INSERT INTO Asignaciones (HardwareID, EmpleadoID, FechaAsignacion) VALUES ({idHard}, {idEmp}, '{fecha}')";
                 db.EjecutarComando(qInsert);
 
-                // PASO 2: Actualizar el estado del Hardware a 'Asignado' (Para que no salga en la lista de nuevo)
+                // 2. Cambiar estado a 'Asignado'
                 string qUpdate = $"UPDATE Hardware SET Estado = 'Asignado' WHERE HardwareID = {idHard}";
                 db.EjecutarComando(qUpdate);
 
-                MessageBox.Show("Equipo Asignado Correctamente.");
-                CargarListas();     // Recargar para quitar el equipo asignado del combo
-                CargarHistorial();  // Verlo en la tabla
+                MessageBox.Show("✅ Equipo asignado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                CargarListas(); // Recargar para que el equipo desaparezca de la lista
+                CargarHistorial();
             }
             catch (Exception ex) { MessageBox.Show("Error: " + ex.Message); }
         }

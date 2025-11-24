@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input; // NECESARIO PARA MOVER
 using System.Data;
-//using Inventario_Hardware_IT.Datos//
+//using Inventario_Hardware_IT.Datos;
 
 namespace Inventario_Hardware_IT
 {
@@ -17,15 +18,27 @@ namespace Inventario_Hardware_IT
             dpFecha.SelectedDate = DateTime.Now;
         }
 
+        // --- FUNCIONES VISUALES ---
+        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
+        }
+
+        private void BtnCerrar_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+        // --------------------------
+
         private void CargarListas()
         {
             try
             {
-                // 1. Cargar Proveedores
+                // Cargar Proveedores
                 cbProveedor.ItemsSource = db.LeerDatos("SELECT * FROM Proveedores").DefaultView;
 
-                // 2. Cargar Equipos (Mostramos Serie + Modelo)
-                // OJO: Podrías filtrar solo los que NO están dados de baja, por ejemplo.
+                // Cargar Equipos (Serie + Modelo)
                 string qEquipos = "SELECT H.HardwareID, (H.NumeroSerie + ' - ' + M.NombreModelo) AS Info FROM Hardware H INNER JOIN Modelos M ON H.ModeloID = M.ModeloID";
                 DataTable dtEq = db.LeerDatos(qEquipos);
 
@@ -40,7 +53,6 @@ namespace Inventario_Hardware_IT
         {
             try
             {
-                // Consulta completa para ver detalles
                 string query = @"SELECT M.MantenimientoID, H.NumeroSerie, P.NombreProveedor, M.DescripcionProblema, M.FechaEntrada, M.Costo 
                                  FROM Mantenimientos M
                                  INNER JOIN Hardware H ON M.HardwareID = H.HardwareID
@@ -52,9 +64,18 @@ namespace Inventario_Hardware_IT
 
         private void BtnGuardar_Click(object sender, RoutedEventArgs e)
         {
-            if (cbEquipo.SelectedValue == null || cbProveedor.SelectedValue == null || string.IsNullOrWhiteSpace(txtCosto.Text))
+            // 1. Validaciones Básicas
+            if (cbEquipo.SelectedValue == null || cbProveedor.SelectedValue == null)
             {
-                MessageBox.Show("Faltan datos."); return;
+                MessageBox.Show("⚠️ Selecciona un Equipo y un Proveedor.", "Faltan datos", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // 2. Validación de Costo (Evitar error si escriben letras)
+            if (!decimal.TryParse(txtCosto.Text, out decimal costo))
+            {
+                MessageBox.Show("⚠️ El costo debe ser un número válido (Ej: 500.00).", "Error de Formato", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
 
             try
@@ -62,18 +83,19 @@ namespace Inventario_Hardware_IT
                 int idHard = (int)cbEquipo.SelectedValue;
                 int idProv = (int)cbProveedor.SelectedValue;
                 string fecha = dpFecha.SelectedDate.Value.ToString("yyyy-MM-dd");
-                decimal costo = Convert.ToDecimal(txtCosto.Text);
                 string desc = txtProblema.Text;
 
-                // 1. Guardar Mantenimiento
+                // Guardar
                 string insert = $"INSERT INTO Mantenimientos (HardwareID, ProveedorID, DescripcionProblema, FechaEntrada, Costo) VALUES ({idHard}, {idProv}, '{desc}', '{fecha}', {costo})";
                 db.EjecutarComando(insert);
 
-                // 2. ACTUALIZAR ESTADO DEL EQUIPO A 'En Reparación'
+                // Actualizar estado del equipo
                 db.EjecutarComando($"UPDATE Hardware SET Estado = 'En Reparación' WHERE HardwareID = {idHard}");
 
-                MessageBox.Show("Equipo enviado a taller.");
-                txtProblema.Clear(); txtCosto.Clear();
+                MessageBox.Show("✅ Equipo enviado a taller correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                txtProblema.Clear();
+                txtCosto.Clear();
                 CargarHistorial();
             }
             catch (Exception ex) { MessageBox.Show("Error: " + ex.Message); }
@@ -83,10 +105,14 @@ namespace Inventario_Hardware_IT
         {
             if (!string.IsNullOrWhiteSpace(txtNuevoProv.Text))
             {
-                db.EjecutarComando($"INSERT INTO Proveedores (NombreProveedor) VALUES ('{txtNuevoProv.Text}')");
-                MessageBox.Show("Proveedor Agregado");
-                txtNuevoProv.Clear();
-                CargarListas(); // Recargar el combo
+                try
+                {
+                    db.EjecutarComando($"INSERT INTO Proveedores (NombreProveedor) VALUES ('{txtNuevoProv.Text}')");
+                    MessageBox.Show("Proveedor Agregado");
+                    txtNuevoProv.Clear();
+                    CargarListas(); // Recargar el combo para que aparezca
+                }
+                catch (Exception ex) { MessageBox.Show("Error: " + ex.Message); }
             }
         }
     }

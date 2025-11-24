@@ -1,36 +1,119 @@
 ﻿<Window x:Class="Inventario_Hardware_IT.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Sistema de Inventario IT - Menú Principal" Height="500" Width="800" WindowStartupLocation="CenterScreen">
+        Title="Sistema de Inventario IT - Dashboard" Height="650" Width="1100" 
+        WindowStartupLocation="CenterScreen" Background="#F5F7FA">
+
+    <Window.Resources>
+        <Style x:Key="MenuButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#BDC3C7"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="20,0,0,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border" Background="{TemplateBinding Background}">
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background" Value="#34495E"/>
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#007ACC"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="4,0,0,0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="MenuTitle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#7F8C8D"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="20,20,0,5"/>
+        </Style>
+    </Window.Resources>
+
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="250"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" Background="#2D3E50">
-            <StackPanel Margin="10">
-                <TextBlock Text="INVENTARIO IT" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,20,0,30" HorizontalAlignment="Center"/>
+        <Border Grid.Column="0" Background="#2C3E50">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <Button x:Name="btnHardware" Content="💻 Gestión de Hardware" Click="BtnHardware_Click" Height="40" Margin="0,5" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalContentAlignment="Left" FontSize="14"/>
-                <Button x:Name="btnModelos" Content="📝 Modelos" Click="BtnModelos_Click" Height="40" Margin="0,5" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalContentAlignment="Left" FontSize="14"/>
-                <Button x:Name="btnMarcas" Content="🏷️ Marcas" Click="BtnMarcas_Click" Height="40" Margin="0,5" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalContentAlignment="Left" FontSize="14"/>
-                <Button x:Name="btnTipos" Content="🖱️ Tipos de Equipo" Click="BtnTipos_Click" Height="40" Margin="0,5" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalContentAlignment="Left" FontSize="14"/>
-                <Button Content="👥 Empleados" Click="BtnEmpleados_Click" Height="40" Margin="0,5" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalContentAlignment="Left" FontSize="14"/>
-                <Button Content="📋 Asignaciones" Click="BtnAsignaciones_Click" Height="40" Margin="0,5" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalContentAlignment="Left" FontSize="14"/>
-                <Button Content="🛠️ Mantenimiento" Click="BtnManto_Click" Height="40" Margin="0,5" Background="Transparent" Foreground="White" BorderThickness="0" HorizontalContentAlignment="Left" FontSize="14"/>
-                
-                <Separator Background="Gray" Margin="0,20"/>
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="20,30,0,30">
+                    <Border Width="40" Height="40" CornerRadius="20" Background="White" Margin="0,0,10,0">
+                        <TextBlock Text="🏢" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="INVENTARIO" Foreground="White" FontSize="16" FontWeight="Bold"/>
+                        <TextBlock Text="HARDWARE IT" Foreground="#007ACC" FontSize="12" FontWeight="Bold"/>
+                    </StackPanel>
+                </StackPanel>
 
-                <Button Content="🚪 Salir" Click="BtnSalir_Click" Height="40" Background="#C0392B" Foreground="White" FontWeight="Bold"/>
-            </StackPanel>
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" BorderThickness="0">
+                    <StackPanel>
+                        <TextBlock Text="OPERACIÓN DIARIA" Style="{StaticResource MenuTitle}"/>
+                        <Button x:Name="btnHardware" Content="💻  Inventario (Hardware)" Style="{StaticResource MenuButton}" Click="BtnHardware_Click"/>
+                        <Button x:Name="btnAsignaciones" Content="📋  Asignaciones" Style="{StaticResource MenuButton}" Click="BtnAsignaciones_Click"/>
+                        <Button x:Name="btnMantenimiento" Content="🛠️  Mantenimiento" Style="{StaticResource MenuButton}" Click="BtnManto_Click"/>
+
+                        <TextBlock Text="CATÁLOGOS" Style="{StaticResource MenuTitle}"/>
+                        <Button x:Name="btnEmpleados" Content="👥  Empleados" Style="{StaticResource MenuButton}" Click="BtnEmpleados_Click"/>
+                        <Button x:Name="btnUbicaciones" Content="📍  Sedes y Ubicaciones" Style="{StaticResource MenuButton}" Click="BtnUbicaciones_Click"/>
+                        <Button x:Name="btnModelos" Content="📝  Modelos de Equipo" Style="{StaticResource MenuButton}" Click="BtnModelos_Click"/>
+
+                        <TextBlock Text="SISTEMA" Style="{StaticResource MenuTitle}"/>
+                        <Button x:Name="btnMarcas" Content="🏷️  Marcas" Style="{StaticResource MenuButton}" Click="BtnMarcas_Click"/>
+                        <Button x:Name="btnTipos" Content="🖱️  Tipos de Hardware" Style="{StaticResource MenuButton}" Click="BtnTipos_Click"/>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <Button Grid.Row="2" Content="⬅  Cerrar Sesión" Click="BtnSalir_Click" Margin="20,20,20,30"
+                        Foreground="#E74C3C" Background="Transparent" BorderThickness="0" Cursor="Hand" FontWeight="Bold" HorizontalAlignment="Left" FontSize="14"/>
+            </Grid>
         </Border>
 
-        <Grid Grid.Column="1" Background="#ECF0F1">
-            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock Text="Bienvenido al Sistema" FontSize="30" Foreground="#2C3E50" HorizontalAlignment="Center"/>
-                <TextBlock Text="Selecciona una opción del menú para comenzar." FontSize="16" Foreground="#7F8C8D" Margin="0,10,0,0" HorizontalAlignment="Center"/>
-            </StackPanel>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Background="White" BorderThickness="0,0,0,1" BorderBrush="#E0E0E0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,30,0">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Right">
+                        <TextBlock x:Name="txtRolUsuario" Text="Administrador" FontWeight="Bold" FontSize="14" Foreground="#2C3E50" TextAlignment="Right"/>
+                        <TextBlock Text="Sesión Activa" FontSize="11" Foreground="#27AE60" TextAlignment="Right"/>
+                    </StackPanel>
+                    <Border Width="35" Height="35" CornerRadius="20" Background="#ECF0F1" Margin="10,0,0,0">
+                        <TextBlock Text="👤" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="18"/>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <Grid Grid.Row="1">
+                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="0.6">
+                    <TextBlock Text="👋" FontSize="50" HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                    <TextBlock Text="Bienvenido al Sistema" FontSize="26" FontWeight="Light" Foreground="#2C3E50" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Selecciona una opción del menú lateral para comenzar" FontSize="16" Foreground="#7F8C8D" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                </StackPanel>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

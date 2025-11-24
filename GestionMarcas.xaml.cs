@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input; // NECESARIO PARA MOVER
+using System.Data;
+//using Inventario_Hardware_IT.Datos;
 
 namespace Inventario_Hardware_IT
 {
@@ -13,47 +16,51 @@ namespace Inventario_Hardware_IT
             CargarMarcas();
         }
 
+        // --- FUNCIONES VISUALES ---
+        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
+        }
+
+        private void BtnCerrar_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+        // --------------------------
+
         private void CargarMarcas()
         {
             try
             {
-                // NOTA: Si en tu base de datos la tabla se llama diferente, avísame.
-                // Asumo que la tabla es 'Marcas'.
                 string consulta = "SELECT * FROM Marcas";
-                gridDatos.ItemsSource = db.LeerDatos(consulta).DefaultView;
+                DataTable dt = db.LeerDatos(consulta);
+                gridDatos.ItemsSource = dt.DefaultView;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error al cargar marcas: " + ex.Message);
-            }
+            catch (Exception ex) { MessageBox.Show("Error al cargar: " + ex.Message); }
         }
 
         private void BtnGuardar_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtNombreMarca.Text))
+            string nombre = txtNombreMarca.Text.Trim();
+
+            if (string.IsNullOrEmpty(nombre))
             {
-                MessageBox.Show("Escribe un nombre para la marca.");
+                MessageBox.Show("⚠️ Escribe un nombre.", "Faltan Datos", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             try
             {
-                string nombre = txtNombreMarca.Text;
-                
-                // --- CORRECCIÓN IMPORTANTE AQUÍ ---
-                // Usamos 'NombreMarca' porque así se llama en TU base de datos real
                 string consulta = $"INSERT INTO Marcas (NombreMarca) VALUES ('{nombre}')";
-                
                 db.EjecutarComando(consulta);
-                
-                MessageBox.Show("Guardado con éxito.");
+
+                MessageBox.Show("✅ Marca registrada con éxito.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+
                 txtNombreMarca.Clear();
-                CargarMarcas(); 
+                CargarMarcas();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message);
-            }
+            catch (Exception ex) { MessageBox.Show("Error al guardar: " + ex.Message); }
         }
     }
 }

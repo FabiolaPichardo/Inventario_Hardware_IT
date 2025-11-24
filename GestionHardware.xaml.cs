@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input; // NECESARIO PARA MOVER VENTANA
 using System.Data;
-
+//using Inventario_Hardware_IT.Datos;
 
 namespace Inventario_Hardware_IT
 {
@@ -10,7 +11,6 @@ namespace Inventario_Hardware_IT
         ConexionDB db = new ConexionDB();
         int _rol;
 
-        // Constructor modificado: si no recibe nada es 1 (admin), pero normalmente recibirá desde el menú
         public GestionHardware(int rolUsuario = 1)
         {
             InitializeComponent();
@@ -20,12 +20,25 @@ namespace Inventario_Hardware_IT
             CargarInventario();
             dpFecha.SelectedDate = DateTime.Now;
 
-            // SEGURIDAD: Solo mostramos el botón rojo si es Admin (Rol 1)
+            // Seguridad: Solo Admin ve el botón eliminar
             if (_rol == 1)
             {
                 btnEliminar.Visibility = Visibility.Visible;
             }
         }
+
+        // --- FUNCIONES VISUALES (NUEVAS) ---
+        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
+        }
+
+        private void BtnCerrar_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+        // -----------------------------------
 
         private void CargarModelosCombo()
         {
@@ -54,7 +67,8 @@ namespace Inventario_Hardware_IT
         {
             if (cbModelo.SelectedValue == null || string.IsNullOrWhiteSpace(txtSerie.Text))
             {
-                MessageBox.Show("Faltan datos obligatorios."); return;
+                MessageBox.Show("⚠️ El Modelo y la Serie son obligatorios.", "Faltan Datos", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
             try
             {
@@ -67,7 +81,7 @@ namespace Inventario_Hardware_IT
                 string query = $"INSERT INTO Hardware (NumeroSerie, EtiquetaActivo, ModeloID, FechaCompra, Estado) VALUES ('{serie}', '{etiqueta}', {modeloId}, '{fecha}', '{estado}')";
                 db.EjecutarComando(query);
 
-                MessageBox.Show("Guardado.");
+                MessageBox.Show("✅ Equipo guardado exitosamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 txtSerie.Clear(); txtEtiqueta.Clear();
                 CargarInventario();
             }
@@ -81,7 +95,7 @@ namespace Inventario_Hardware_IT
                 MessageBox.Show("Selecciona una fila primero."); return;
             }
 
-            if (MessageBox.Show("¿Borrar este equipo?", "Confirmar", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if (MessageBox.Show("¿Estás seguro de ELIMINAR este equipo permanentemente?", "Confirmar Eliminación", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             {
                 try
                 {
@@ -89,7 +103,7 @@ namespace Inventario_Hardware_IT
                     int idHardware = Convert.ToInt32(fila["HardwareID"]);
                     db.EjecutarComando($"DELETE FROM Hardware WHERE HardwareID = {idHardware}");
 
-                    MessageBox.Show("Eliminado.");
+                    MessageBox.Show("🗑️ Equipo eliminado.");
                     CargarInventario();
                 }
                 catch (Exception ex) { MessageBox.Show("Error al eliminar: " + ex.Message); }
