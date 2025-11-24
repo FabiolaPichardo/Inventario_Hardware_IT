@@ -3,19 +3,19 @@ using System.Data.SqlClient;
 using System.Configuration;
 using System.Data;
 
-namespace Inventario_Hardware_IT.Datos // <--- 1. ESTO ARREGLA EL ERROR ROJO
+namespace Inventario_Hardware_IT // <--- CORREGIDO: Se quitó ".Datos" para que MainWindow lo reconozca
 {
     public class ConexionDB
     {
-        // 2. Asegúrate de que este nombre ("CadenaInventario") sea IGUAL al que pusiste en App.config
-        // Si en App.config dice name="CadenaPrincipal", cambia el texto de abajo.
+        // IMPORTANTE: Asegúrate que en tu App.config la conexión se llame igual que aquí: "CadenaPrincipal"
         private string connectionStringName = "CadenaPrincipal";
 
         private string ObtenerCadena()
         {
+            // Busca la cadena de conexión en el archivo App.config
             var connectionStringItem = ConfigurationManager.ConnectionStrings[connectionStringName];
 
-            // Verificación de seguridad por si el nombre está mal
+            // Verificación de seguridad por si el nombre está mal o no existe en App.config
             if (connectionStringItem == null)
             {
                 throw new Exception($"No se encontró la cadena de conexión '{connectionStringName}' en App.config.");
@@ -29,9 +29,9 @@ namespace Inventario_Hardware_IT.Datos // <--- 1. ESTO ARREGLA EL ERROR ROJO
             return new SqlConnection(ObtenerCadena());
         }
 
-        // --- FUNCIONES NECESARIAS PARA TUS VENTANAS (CRUD) ---
+        // --- FUNCIONES PARA TUS VENTANAS (CRUD) ---
 
-        // Función para leer tablas (SELECT)
+        // Función para leer tablas (SELECT) - Devuelve una tabla con datos
         public DataTable LeerDatos(string query)
         {
             DataTable tabla = new DataTable();
@@ -52,7 +52,7 @@ namespace Inventario_Hardware_IT.Datos // <--- 1. ESTO ARREGLA EL ERROR ROJO
             return tabla;
         }
 
-        // Función para guardar/editar/borrar (INSERT, UPDATE, DELETE)
+        // Función para guardar/editar/borrar (INSERT, UPDATE, DELETE) - No devuelve datos
         public void EjecutarComando(string query)
         {
             using (SqlConnection con = ObtenerConexion())

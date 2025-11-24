@@ -56,7 +56,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="GestionHardware.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="GestionMarcas.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GestionModelos.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="GestionTipos.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Login.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -69,8 +85,20 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ConexionDB.cs" />
+    <Compile Include="GestionHardware.xaml.cs">
+      <DependentUpon>GestionHardware.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GestionMarcas.xaml.cs">
       <DependentUpon>GestionMarcas.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GestionModelos.xaml.cs">
+      <DependentUpon>GestionModelos.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GestionTipos.xaml.cs">
+      <DependentUpon>GestionTipos.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Login.xaml.cs">
+      <DependentUpon>Login.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
